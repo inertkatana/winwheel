@@ -3,6 +3,7 @@ name: Build WinWheel
 on:
   push:
     branches: [ "main" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -18,8 +19,6 @@ jobs:
 
     - name: Compile WinWheel executable
       run: |
-        # 编译为原生的 Windows GUI 程序以隐藏控制台黑框 (-SUBSYSTEM:WINDOWS)
-        # O2作全局优化，MD连接动态C运行库，减小体积
         cl.exe /nologo /O2 /MD /Fe:winwheel.exe winwheel.c /link /SUBSYSTEM:WINDOWS
 
     - name: Upload Artifact
@@ -27,3 +26,12 @@ jobs:
       with:
         name: winwheel-exe
         path: winwheel.exe
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: winwheel.exe
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
