@@ -35,7 +35,7 @@ void ShowContextMenu(HWND hwnd) {
     GetCursorPos(&pt);
     HMENU hMenu = CreatePopupMenu();
     InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING | (g_bDesktopSwitchEnabled ? MF_CHECKED : MF_UNCHECKED), IDM_DESKTOP_SWITCH, TEXT("Desktop Switch"));
-    InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING | (g_bWinGestureEnabled ? MF_CHECKED : MF_UNCHECKED), IDM_WIN_GESTURE, TEXT("Win Gestures"));
+    InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING | (g_bWinGestureEnabled ? MF_CHECKED : MF_UNCHECKED), IDM_WIN_GESTURE, TEXT("Task View"));
     InsertMenu(hMenu, 2, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
     InsertMenu(hMenu, 3, MF_BYPOSITION | MF_STRING, IDM_EXIT, TEXT("Exit"));
     
