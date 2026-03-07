@@ -143,10 +143,6 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
             return CallNextHookEx(g_hKbdHook, nCode, wParam, lParam);
         }
         
-        if (!g_bWinGestureEnabled) {
-            return CallNextHookEx(g_hKbdHook, nCode, wParam, lParam);
-        }
-        
         bool isWinKey = (pKey->vkCode == VK_LWIN || pKey->vkCode == VK_RWIN);
         
         if (isWinKey) {
@@ -173,12 +169,12 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
                     
                     inputs[2].type = INPUT_KEYBOARD;
                     inputs[2].ki.wVk = (WORD)pKey->vkCode;
-                    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+                    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP | (pKey->flags & LLKHF_EXTENDED ? KEYEVENTF_EXTENDEDKEY : 0);
                     inputs[2].ki.dwExtraInfo = INJECT_TAG;
                     
                     SendInput(3, inputs, sizeof(INPUT));
                     return 1;
-                } else if (!g_bHasComboHappened) {
+                } else if (!g_bHasComboHappened && g_bWinGestureEnabled) {
                     ULONGLONG now = GetTickCount64();
                     UINT threshold = GetDoubleClickTime();
                     
@@ -202,7 +198,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
                     
                     inputs[2].type = INPUT_KEYBOARD;
                     inputs[2].ki.wVk = (WORD)pKey->vkCode;
-                    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+                    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP | (pKey->flags & LLKHF_EXTENDED ? KEYEVENTF_EXTENDEDKEY : 0);
                     inputs[2].ki.dwExtraInfo = INJECT_TAG;
                     
                     SendInput(3, inputs, sizeof(INPUT));
@@ -233,8 +229,8 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
             
             g_bScrollHandled = true;
             
-            static DWORD s_lastScrollTime = 0;
-            DWORD now = GetTickCount();
+            static ULONGLONG s_lastScrollTime = 0;
+            ULONGLONG now = GetTickCount64();
             
             if (now - s_lastScrollTime > 100) {
                 s_lastScrollTime = now;
