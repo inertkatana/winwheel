@@ -250,7 +250,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     wc.lpszClassName = TEXT("WinWheelClass");
     RegisterClass(&wc);
 
-    g_hwnd = CreateWindowEx(0, wc.lpszClassName, TEXT("WinWheel"), 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, hInstance, NULL);
+    g_hwnd = CreateWindowEx(WS_EX_TOOLWINDOW, wc.lpszClassName, TEXT("WinWheel"), WS_POPUP, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
 
     nid.cbSize = sizeof(NOTIFYICONDATA);
     nid.hWnd = g_hwnd;
